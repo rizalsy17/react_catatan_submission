@@ -3,9 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArchive, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import noNotesImage from '../../public/empty.png';
-
-
-
 import Modal from './Modal';
 
 const NoteList = ({ notes, onArchive, setNotes }) => {

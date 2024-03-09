@@ -5,7 +5,7 @@ import { faHome, faCheck, faTrash,faEdit } from '@fortawesome/free-solid-svg-ico
 import noNotesImage from '../../public/empty.png';
 import Modal from '../components/Modal';
 
-const Archive = ({ archivedNotes, onActivate, onDeleteNote, onArchive, onEdit, setNotes}) => {
+const Archive = ({ archivedNotes, onActivate, onDeleteNote, onEdit}) => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
 
@@ -73,7 +73,7 @@ const Archive = ({ archivedNotes, onActivate, onDeleteNote, onArchive, onEdit, s
       ) : (
         <div className="note-cards">
           {archivedFilter.map((note) => (
-            <div className="note-card" style={{ marginTop: '56px' }} key={note.id}>
+            <div className="note-card" key={note.id}>
               <Link to={`/note/${note.id}`}>
                 <h3>{note.title}</h3>
               </Link>
