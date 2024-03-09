@@ -1,7 +1,5 @@
-// src/pages/NotFound.jsx
-
 import React from 'react';
-import notFoundImage from '../../public/not found.png'; // Replace with the actual path to your image
+import notFoundImage from '../../public/not found.png';
 
 const NotFound = () => {
   return (

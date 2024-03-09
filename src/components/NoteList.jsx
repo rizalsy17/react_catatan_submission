@@ -1,19 +1,16 @@
-// src/components/NoteList.jsx
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArchive, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import noNotesImage from '../../public/empty.png';
+
+
+
 import Modal from './Modal';
 
-const NoteList = ({ notes, onArchive, setNotes, setShowModalProp, setModalContentProp }) => {
+const NoteList = ({ notes, onArchive, setNotes }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
-
-  useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-  }, [notes]);
 
   const handleEditClick = (note) => {
     setModalContent({
@@ -30,7 +27,7 @@ const NoteList = ({ notes, onArchive, setNotes, setShowModalProp, setModalConten
       type: 'confirm',
       message: 'Anda yakin ingin mengembalikan catatan ini?',
       onConfirm: () => {
-        onArchive(noteId); // Panggil fungsi onArchive untuk mengembalikan catatan dari arsip
+        onArchive(noteId);
         setShowModal(false);
       },
       noteId: noteId,
@@ -38,15 +35,16 @@ const NoteList = ({ notes, onArchive, setNotes, setShowModalProp, setModalConten
     setShowModal(true);
   };
   
+  
   return (
     <div className="container">
       {notes.length === 0 ? (
-        <img src={noNotesImage} alt="No Notes" style={{ width: '600px', height:'400px', marginBottom: '160px'}}/>
+        <img src={noNotesImage} alt="No Notes" className="no-notes-image"/>
       ) : (
         <div className="note-cards">
           {notes.map((note) => (
             <div className="note-card" key={note.id}>
-              <Link to={`/note/${note.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link to={`/note/${note.id}`} >
                 <h3>{note.title}</h3>
               </Link>
               <p>{new Date(note.createdAt).toLocaleString()}</p>

@@ -1,7 +1,6 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import NoteDetail from './components/NoteDetail'; // Import NoteDetail component
+import NoteDetail from './components/NoteDetail';
 import AddNoteForm from './components/AddNoteForm';
 import Home from './pages/Home';
 import Archive from './pages/Archive';
@@ -9,92 +8,96 @@ import NotFound from './pages/NotFound';
 import Modal from './components/Modal';
 
 const App = () => {
-  const [notes, setNotes] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('notes')) || [];
-    } catch (error) {
-      console.error('Error parsing localStorage for notes:', error);
-      return [];
-    }
-  });
-
-  const [archived, setArchived] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('archivedNotes')) || [];
-    } catch (error) {
-      console.error('Error parsing localStorage for archivedNotes:', error);
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-    localStorage.setItem('archivedNotes', JSON.stringify(archived));
-  }, [notes, archived]);
-  
-  
-
+  const [notes, setNotes] = useState(() => JSON.parse(localStorage.getItem('notes')) || []);
+  const [archived, setArchived] = useState(() => JSON.parse(localStorage.getItem('archivedNotes')) || []);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
 
+  useEffect(() => {
+    localStorage.setItem('notes', JSON.stringify(notes));
+  }, [notes]);
+
+  useEffect(() => {
+    localStorage.setItem('archivedNotes', JSON.stringify(archived));
+  }, [archived]);
 
   const onArchive = (noteId) => {
     setNotes((prevNotes) => {
       const updatedNotes = prevNotes.map((note) =>
         note.id === noteId ? { ...note, archived: true } : note
       );
-  
+
       const noteToArchive = updatedNotes.find((note) => note.id === noteId);
-  
+
       if (noteToArchive && !archived.some((note) => note.id === noteId)) {
         setArchived((prevArchived) => {
           const newArchived = [...prevArchived, noteToArchive];
-          localStorage.setItem('archivedNotes', JSON.stringify(newArchived));
           return newArchived;
         });
       }
-  
-      localStorage.setItem('notes', JSON.stringify(updatedNotes));
+
       return updatedNotes;
     });
   };
-  
-  // const onDeleteNote = (noteId) => {
-  //   setNotes((prevNotes) => {
-  //     const updatedNotes = prevNotes.filter((note) => note.id !== noteId);
-  //     localStorage.setItem('notes', JSON.stringify(updatedNotes));
-  //     return updatedNotes;
-  //   });
-  // };
-  
-  
+
+const onSaveEdit = (noteId, editedTitle, editedBody) => {
+  setNotes((prevNotes) => {
+    const updatedNotes = prevNotes.map((note) =>
+      note.id === noteId ? { ...note, title: editedTitle, body: editedBody } : note
+    );
+
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+    return updatedNotes;
+  });
+
+  setArchived((prevArchived) => {
+    const updatedArchived = prevArchived.map((note) =>
+      note.id === noteId ? { ...note, title: editedTitle, body: editedBody } : note
+    );
+
+    localStorage.setItem('archivedNotes', JSON.stringify(updatedArchived));
+    return updatedArchived;
+  });
+};
+
+const onActivate = (noteId) => {
+  setNotes((prevNotes) => {
+    const updatedNotes = prevNotes.map((note) =>
+      note.id === noteId ? { ...note, archived: false } : note
+    );
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+    return updatedNotes;
+  });
+
+  const updatedArchived = archived.filter((note) => note.id !== noteId);
+  setArchived(updatedArchived);
+  localStorage.setItem('archivedNotes', JSON.stringify(updatedArchived));
+};
+
   return (
     <div>
       <Routes>
-      <Route
-  path="/"
-  element={<Home notes={notes} setNotes={setNotes} onArchive={onArchive} onDeleteNote={(noteId) => {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
-    localStorage.setItem('notes', JSON.stringify(prevNotes.filter((note) => note.id !== noteId)));
-  }} />}
-/>
+        <Route
+          path="/"
+          element={<Home notes={notes} setNotes={setNotes} onArchive={onArchive} onDeleteNote={(noteId) => {
+            setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+            localStorage.setItem('notes', JSON.stringify(prevNotes.filter((note) => note.id !== noteId)));
+          }} />}
+        />
         <Route path="/addnote" element={<AddNoteForm notes={notes} setNotes={setNotes} />} />
-        {/* Add the Route for NoteDetail */}
         <Route path="/note/:id" element={<NoteDetail notes={notes} />} />
         <Route
   path="/archive"
   element={
     <Archive
       archivedNotes={archived}
-      onActivate={(noteId) => console.log('Activate note', noteId)}
+      onActivate={onActivate}  
       onDeleteNote={(noteId) => {
-        setNotes((prevNotes) => [...prevNotes, archived.find((note) => note.id === noteId)]);
-        setArchived((prevArchived) => prevArchived.filter((note) => note.id !== noteId));
+        const archivedFilter = archived.filter((note) => note.id !== noteId);
+        setArchived(archivedFilter);
+        localStorage.setItem('archivedNotes', JSON.stringify(archivedFilter));
       }}
-      onEdit={(noteId, editedTitle, editedBody) => {
-        // Implement the logic to edit a note in the archivedNotes array
-        console.log(`Edit note with ID ${noteId}`);
-      }}
+      onEdit={onSaveEdit}
       setShowModal={setShowModal}
       setModalContent={setModalContent}
       setNotes={setNotes}
@@ -102,14 +105,18 @@ const App = () => {
   }
 />
 
-       <Route path="/delete/:id"
+
+        <Route
+          path="/delete/:id"
           element={
             <Modal
               content={{
                 type: 'delete',
                 onDeleteNote: (noteId) => {
                   setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+                  setArchived((prevArchived) => prevArchived.filter((note) => note.id !== noteId));
                   localStorage.setItem('notes', JSON.stringify(prevNotes));
+                  localStorage.setItem('archivedNotes', JSON.stringify(prevArchived));
                   setShowModal(false);
                 },
                 noteId: ':id',
@@ -117,13 +124,11 @@ const App = () => {
               onClose={() => setShowModal(false)}
               onArchive={onArchive}
             />
-            }
-
-                />
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-      {/* Modal */}
       {showModal && (
         <Modal
           content={modalContent}

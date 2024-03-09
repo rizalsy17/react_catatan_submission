@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faArchive, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-const NoteDetail = ({ notes, onDelete, onArchive }) => {
+const NoteDetail = ({ notes }) => {
   const { id } = useParams();
   const note = notes.find((n) => n.id === id);
 
@@ -14,7 +14,7 @@ const NoteDetail = ({ notes, onDelete, onArchive }) => {
   return (
     <div className="center-container">
       <div className="note-detail-container">
-        <Link to="/" className="back-button">
+        <Link to="/" className="back-button-form ">
           <FontAwesomeIcon icon={faHome} /> Kembali
         </Link>
         <h1 className="note-title">{note.title}</h1>
@@ -24,15 +24,7 @@ const NoteDetail = ({ notes, onDelete, onArchive }) => {
         <div className="note-detail">
           
             <p>{note.body}</p>
-        
-          {/* <div className="note-actions">
-            <button className="action-button" onClick={() => onDelete(note.id)}>
-              <FontAwesomeIcon icon={faTrash} /> Hapus
-            </button>
-            <button className="action-button" onClick={() => onArchive(note.id)}>
-              <FontAwesomeIcon icon={faArchive} /> Arsipkan
-            </button>
-          </div> */}
+      
         </div>
       </div>
     </div>

@@ -1,55 +1,43 @@
-// Archive.jsx
-import React, { useState } from 'react';
-import NoteList from '../components/NoteList';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCheck, faTrash,faEdit } from '@fortawesome/free-solid-svg-icons';
+import noNotesImage from '../../public/empty.png';
 import Modal from '../components/Modal';
 
-const Archive = ({ archivedNotes, onActivate, onDeleteNote, onArchive, onEdit, setNotes }) => {
+const Archive = ({ archivedNotes, onActivate, onDeleteNote, onArchive, onEdit, setNotes}) => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
 
-  const handleActivate = (noteId) => {
-    onActivate(noteId);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handleDelete = (noteId) => {
-    setModalContent({
-      type: 'delete',
-      noteId: noteId,
-      onDeleteNote: () => {
-        onDeleteNote(noteId);
-        setShowModal(false);
-      },
-    });
-    setShowModal(true);
-  };
-  
+  const archivedFilter = searchTerm
+    ? archivedNotes.filter(
+        (note) => !note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : archivedNotes;
 
-  const handleEdit = (noteId) => {
-    const noteToEdit = archivedNotes.find((note) => note.id === noteId);
-  
+
+  const handleEditArchive = (note) => {
     setModalContent({
       type: 'edit',
-      noteId: noteToEdit.id,
-      noteTitle: noteToEdit.title,
-      noteBody: noteToEdit.body,
-      onSaveEdit: (editedTitle, editedBody) => {
-        onEdit(noteId, editedTitle, editedBody);
-        setShowModal(false);
-      },
+      noteId: note.id,
+      noteTitle: note.title,
+      noteBody: note.body,
     });
-  
     setShowModal(true);
   };
 
-  const handleArchive = (noteId) => {
+  const handleActivate = (noteId) => {
     setModalContent({
-      type: 'confirm',
-      message: 'Anda yakin ingin mengembalikan catatan ini?',
+      type: 'activate',
+      message: 'Anda yakin ingin mengaktifkan catatan ini?',
       onConfirm: () => {
-        onArchive(noteId);
+        onActivate(noteId);
         setShowModal(false);
       },
       noteId: noteId,
@@ -57,46 +45,84 @@ const Archive = ({ archivedNotes, onActivate, onDeleteNote, onArchive, onEdit, s
     setShowModal(true);
   };
 
+  useEffect(() => {
+    localStorage.setItem('archivedNotes', JSON.stringify(archivedNotes));
+  }, [archivedNotes]);
+
   return (
-    <div>
-      <Link to="/" className="back-button">
+    <div className="container">
+      <Link to="/" className="back-button-form">
         <FontAwesomeIcon icon={faHome} /> Kembali
       </Link>
       <header>
         <h1 style={{ textAlign: 'center' }}>Data Arsip</h1>
       </header>
-
-      <NoteList
-        notes={archivedNotes}
-        setNotes={setNotes}
-        archived={true}
-        onActivate={handleActivate}
-        onDeleteNote={handleDelete}
-        onArchive={handleArchive}
-        onEdit={handleEdit}
-      />
-
-{showModal && (
-  <Modal
-    content={modalContent}
-    onClose={() => setShowModal(false)}
-    onDeleteNote={(noteId) => {
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
-      setShowModal(false);
-    }}
-    onSaveEdit={(noteId, editedTitle, editedBody) => {
-      // Implement logic to save the edited note in the archivedNotes array
-      console.log(`Save edited note with ID ${noteId}`);
-      setShowModal(false);
-    }}
-    onArchive={(noteId) => {
-      // Implement logic to archive the note in the archivedNotes array
-      onArchive && onArchive(noteId);
-      setShowModal(false);
-    }}
-  />
-)}
-
+      <section className="content">
+        <div className="search-container">
+          <input
+            type="text"
+            id="search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Cari catatan..."
+          />
+        </div>
+        <div className="container">
+      {archivedFilter.length === 0 ? (
+        <img src={noNotesImage} alt="No Notes" className="no-notes-image"/>
+      ) : (
+        <div className="note-cards">
+          {archivedFilter.map((note) => (
+            <div className="note-card" style={{ marginTop: '56px' }} key={note.id}>
+              <Link to={`/note/${note.id}`}>
+                <h3>{note.title}</h3>
+              </Link>
+              <p>{new Date(note.createdAt).toLocaleString()}</p>
+              <div className="actions">
+                <button className="archive-button" onClick={() => handleActivate(note.id)}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </button>
+                <button
+                  className="delete-button"
+                  onClick={() => {
+                    setModalContent({
+                      type: 'delete',
+                      noteId: note.id,
+                    });
+                    setShowModal(true);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+                <button className="edit-button" onClick={() => handleEditArchive(note)}>
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+              </div>
+              </div>
+       
+          ))}
+        </div>
+      )}
+     </div>
+        {showModal && (
+          <Modal
+            content={modalContent}
+            onClose={() => setShowModal(false)}
+            onDeleteNote={(noteId) => {
+              onDeleteNote(noteId);
+              setShowModal(false);
+            }}
+            onSaveEdit={(noteId, editedTitle, editedBody) => {
+              onEdit(noteId, editedTitle, editedBody);
+              setShowModal(false);
+            }}
+            onActivate={(noteId) => {  // Add this line
+              onActivate && onActivate(noteId);
+              setShowModal(false);
+            }}
+          />
+        )}
+      </section>
     </div>
   );
 };

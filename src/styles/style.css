@@ -73,6 +73,7 @@ button:hover {
   transition: transform 0.3s ease;
 }
 
+
 .note-card:hover {
   transform: scale(1.05);
  
@@ -117,7 +118,9 @@ button:hover {
   color: #fff;
 }
 
-
+.note-detail p {
+  text-align: justify; /* Rata kanan kiri */
+}
 
 .add-note-button {
   position: fixed;
@@ -147,16 +150,6 @@ button:hover {
 .add-note-button i {
   margin-right: 5px;
 }
-
-
-/* .note-card:nth-child(1) {
-  background-color: #FDE2E4;
-} */
-
-
-/* .note-card:nth-child(2) {
-  background-color: #E0F7FA;
-} */
 
 .center-container {
   display: flex;
@@ -232,7 +225,7 @@ button:hover {
   background-color: #357ae8;
 }
 
-.back-button {
+.back-button-form {
   position: fixed;
   top: 20px;
   left: 20px;
@@ -550,8 +543,156 @@ pre {
   border-radius: 4px;
 }
 
+/* Add this at the end of your existing CSS file */
+
 @media only screen and (max-width: 768px) {
-  input[type="text"] {
-    width: 94%;
+  body {
+    align-items: center;
+    height: 100%;
   }
+  .container {
+    position: relative; /* Tambahkan properti ini pada container utama */
+  }
+  
+  .action-buttons {
+    position: sticky;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+  }
+  
+  .add-note-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #3498db;
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 24px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  
+    &:hover {
+      background-color: #2980b9;
+    }
+  }
+
+  .search-container {
+    margin-top: 10px;
+  }
+
+  input[type="text"] {
+    width: calc(100% - 20px);
+    margin-right: 0;
+  }
+
+  .note-card {
+    width: 300px;
+    box-sizing: border-box;
+    margin: auto;
+    padding: 10px;
+    overflow: hidden; 
+  }
+  
+
+  .note-card h3 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+  }
+
+  .note-card p {
+    font-size: 0.8em;
+    margin-top: 5px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+  }
+
+  .archive-button,
+  .delete-button,
+  .edit-button {
+    font-size: 0.8em;
+    padding: 8px 12px;
+  }
+
+  .add-note-button {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .arsip-button,
+  .back-button {
+    position: sticky;
+    top: 0;
+    padding: 10px;
+    margin: 0 10px;
+    text-decoration: none;
+    color: #4267a3;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .arsip-button:hover,
+  .back-button:hover {
+    color: #314f7b;
+  }
+
+  .back-button {
+    left: 0;
+  }
+
+  .arsip-button {
+    right: 0;
+  }
+
+  .back-button-form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    text-decoration: none;
+    color: #4267a3;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .back-button-form:hover {
+    color: #314f7b;
+  }
+
+  .note-detail {
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+
+  .note-cards {
+    margin-bottom: 340px; /* Sesuaikan margin top dengan yang diinginkan */
+  }
+
+  .note-detail p {
+    text-align: justify;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .search-container {
+    max-width: 180px;
+    margin: 0 auto;
+  }
+
+  .no-notes-image {
+    width: 87%;
+    height: auto;
+    max-width: 500px;
+    margin-bottom: 16px;
+  }
+
 }

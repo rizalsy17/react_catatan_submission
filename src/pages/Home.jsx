@@ -1,30 +1,27 @@
-// Home.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArchive } from '@fortawesome/free-solid-svg-icons';
 import NoteList from '../components/NoteList';
-import AddNoteForm from '../components/AddNoteForm';
+
+
 import '../styles/style.css';
 
-const Home = ({ notes, setNotes, onArchive }) => {
+const Home = ({ notes, setNotes, onArchive,onActivate }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // useEffect(() => {
-  //   localStorage.setItem('notes', JSON.stringify(notes));
-  // }, [notes]);
-
-  // Filter notes based on the search term
   const filteredNotes = notes.filter(
     (note) => !note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // console.log('All notes length:', archivedNotes.length);
-  // console.log('Filtered notes length:', filteredNotes.length);
+  
+  useEffect(() => {
+    localStorage.setItem('notes', JSON.stringify(notes));
+  }, [notes]);
 
   return (
     <div className="container">
@@ -45,10 +42,8 @@ const Home = ({ notes, setNotes, onArchive }) => {
           />
         </div>
 
-        {/* Tampilkan daftar catatan menggunakan NoteList */}
-        <NoteList notes={filteredNotes} onArchive={onArchive} setNotes={setNotes} archived={false} />
+        <NoteList notes={filteredNotes} onArchive={onArchive} setNotes={setNotes} archived={false} onActivate={onActivate} />
 
-        {/* Tambah Catatan button */}
         <div className="action-buttons">
           <Link to="/addnote" className="add-note-button">
             <FontAwesomeIcon icon={faPlus} />

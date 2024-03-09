@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 
-const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive  }) => {
-  console.log('Content:', content); // Add this line
-  // State untuk menyimpan nilai input yang diedit
+const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive,onActivate  }) => {
   const [editedTitle, setEditedTitle] = useState(content.noteTitle);
   const [editedBody, setEditedBody] = useState(content.noteBody);
 
+  
   const handleConfirm = () => {
     if (content.type === 'delete') {
       console.log(`Hapus catatan dengan ID: ${content.noteId}`);
@@ -14,7 +13,10 @@ const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive  }) => {
       console.log(`Edit catatan dengan ID: ${content.noteId}`);
     } else if (content.type === 'confirm') {
       onArchive && onArchive(content.noteId);
-    }
+  } else if (content.type === 'activate') {
+    onActivate && onActivate(content.noteId);
+  }
+
 }
 
   const handleSaveEdit = () => {
@@ -50,6 +52,16 @@ const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive  }) => {
                 </button>
               </>
             )}
+
+          {content.type === 'activate' && (
+            <>
+              <h2>Konfirmasi Aktivasi</h2>
+              <p>{content.message}</p>
+              <button className="confirm-button" onClick={handleConfirm}>
+                Aktifkan
+              </button>
+            </>
+          )}
 
 
           {content.type === 'detail' && (

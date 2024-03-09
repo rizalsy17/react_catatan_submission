@@ -13,17 +13,24 @@ const AddNoteForm = ({ notes, setNotes }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     const newCharCount = value.length;
-    
-    // Cek apakah jumlah karakter tidak melebihi 50
-    if (newCharCount <= 50) {
+  
+    const isTitleField = name === 'title';
+    const isTitleWithinLimit = isTitleField && newCharCount <= 50;
+    if (isTitleWithinLimit) {
       setNewNote((prevNote) => ({
         ...prevNote,
         [name]: value,
       }));
       setCharCount(newCharCount);
     }
+    else {
+      setNewNote((prevNote) => ({
+        ...prevNote,
+        [name]: value,
+      }));
+    }
   };
-
+  
   const handleAddNote = () => {
     if (newNote.title.trim() && newNote.body.trim()) {
       const timestamp = +new Date();
@@ -50,7 +57,7 @@ const AddNoteForm = ({ notes, setNotes }) => {
   return (
     <div className='center-container'>
       <div className="add-note-form-container">
-      <Link to="/" className="back-button">
+      <Link to="/" className="back-button-form">
           <FontAwesomeIcon icon={faHome} /> Kembali
         </Link>
         <h2>Tambah Catatan Baru</h2>
