@@ -1,27 +1,24 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArchive } from '@fortawesome/free-solid-svg-icons';
 import NoteList from '../components/NoteList';
-
-
 import '../styles/style.css';
 
-const Home = ({ notes, setNotes, onArchive,onActivate }) => {
+const Home = ({ notes, setNotes, onArchive, onActivate, onDeleteNote, setShowModal, setModalContent }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredNotes = notes.filter(
-    (note) => !note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  
-  useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-  }, [notes]);
+  const filteredNotes = searchTerm
+  ? notes.filter(
+      (note) =>
+        (!note.archived || (note.archived && note.isDummy)) && // Tambahkan kondisi ini
+        note.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : notes;
 
   return (
     <div className="container">
@@ -42,8 +39,22 @@ const Home = ({ notes, setNotes, onArchive,onActivate }) => {
           />
         </div>
 
-        <NoteList notes={filteredNotes} onArchive={onArchive} setNotes={setNotes} archived={false} onActivate={onActivate} />
-
+        <NoteList
+  notes={filteredNotes}
+  onArchive={(noteId) => {
+    onArchive(noteId, setShowModal, setModalContent);
+  }}
+  setNotes={setNotes}
+  archived={false}
+  onActivate={(noteId) => {
+    onActivate(noteId);
+    setShowModal(true);
+    setModalContent({
+      type: 'confirm',
+      message: 'Catatan berhasil diaktifkan!',
+    });
+  }}
+/>
         <div className="action-buttons">
           <Link to="/addnote" className="add-note-button">
             <FontAwesomeIcon icon={faPlus} />

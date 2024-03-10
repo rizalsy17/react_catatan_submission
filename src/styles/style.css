@@ -627,7 +627,7 @@ pre {
 
   .arsip-button,
   .back-button {
-    position: sticky;
+    /* position: sticky; */
     top: 0;
     padding: 10px;
     margin: 0 10px;

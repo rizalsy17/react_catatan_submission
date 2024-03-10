@@ -6,6 +6,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 const NoteDetail = ({ notes }) => {
   const { id } = useParams();
   const note = notes.find((n) => n.id === id);
+    // const note = notes.find((n) => n.id.toString() === id);
 
   if (!note) {
     return <p>Catatan tidak ditemukan</p>;

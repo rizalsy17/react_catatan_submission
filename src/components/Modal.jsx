@@ -1,29 +1,26 @@
 import React, { useState } from 'react';
 
-const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive,onActivate  }) => {
+const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive, onActivate }) => {
   const [editedTitle, setEditedTitle] = useState(content.noteTitle);
   const [editedBody, setEditedBody] = useState(content.noteBody);
 
-  
   const handleConfirm = () => {
     if (content.type === 'delete') {
-      console.log(`Hapus catatan dengan ID: ${content.noteId}`);
       onDeleteNote && onDeleteNote(content.noteId);
     } else if (content.type === 'edit') {
-      console.log(`Edit catatan dengan ID: ${content.noteId}`);
+      onSaveEdit && onSaveEdit(content.noteId, editedTitle, editedBody);
     } else if (content.type === 'confirm') {
       onArchive && onArchive(content.noteId);
-  } else if (content.type === 'activate') {
-    onActivate && onActivate(content.noteId);
-  }
-
-}
-
-  const handleSaveEdit = () => {
-    onSaveEdit(content.noteId, editedTitle, editedBody);
+    } else if (content.type === 'activate') {
+      onActivate && onActivate(content.noteId);
+    }
     onClose();
   };
 
+  const handleSaveEdit = () => {
+    onSaveEdit && onSaveEdit(content.noteId, editedTitle, editedBody);
+    onClose();
+  };
 
   return (
     <div className="modal-overlay">
@@ -32,7 +29,6 @@ const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive,onActivat
           X
         </button>
         <div className="modal-content">
-          {/* Tampilkan konten modal sesuai dengan content.type */}
           {content.type === 'delete' && (
             <>
               <h2>Konfirmasi Hapus</h2>
@@ -43,15 +39,15 @@ const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive,onActivat
             </>
           )}
 
-            {content.type === 'confirm' && (
-              <>
-                <h2>Konfirmasi Arsip</h2>
-                <p>{content.message}</p>
-                <button className="confirm-button" onClick={handleConfirm}>
-                  Arsipkan
-                </button>
-              </>
-            )}
+          {content.type === 'confirm' && (
+            <>
+              <h2>Konfirmasi Arsip</h2>
+              <p>{content.message}</p>
+              <button className="confirm-button" onClick={handleConfirm}>
+                Arsipkan
+              </button>
+            </>
+          )}
 
           {content.type === 'activate' && (
             <>
@@ -62,7 +58,6 @@ const Modal = ({ content, onDeleteNote, onClose, onSaveEdit, onArchive,onActivat
               </button>
             </>
           )}
-
 
           {content.type === 'detail' && (
             <>
