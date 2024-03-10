@@ -12,13 +12,9 @@ const Home = ({ notes, setNotes, onArchive, onActivate, onDeleteNote, setShowMod
     setSearchTerm(e.target.value);
   };
 
-  const filteredNotes = searchTerm
-  ? notes.filter(
-      (note) =>
-        (!note.archived || (note.archived && note.isDummy)) && // Tambahkan kondisi ini
-        note.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  : notes;
+  const filteredNotes = notes.filter(
+    (note) => note && !note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container">

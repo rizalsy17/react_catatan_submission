@@ -16,12 +16,9 @@ const deleteNote = (data, noteId) => {
   
   const archiveDummyNote = (notes, noteId) => {
     return notes.map((note) =>
-      note.id === noteId && note.isDummy ? { ...note, archived: true } : note
+      note.id === noteId ? { ...note, archived: true } : note
     );
   };
   
-  
-  
-  
-  export { editNote, activateNote, deleteNote, archiveDummyNote  };
+  export { editNote, activateNote, deleteNote, archiveDummyNote };
   

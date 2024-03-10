@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArchive, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { getInitialData, showFormattedDate } from '../utils/index';
-import { deleteNote, editNote, archiveDummyNote  } from './NoteUtils'; // Mengimpor fungsi-fungsi dari utilitas
+import { deleteNote, editNote } from './NoteUtils'; // Mengimpor fungsi-fungsi dari utilitas
 import Modal from './Modal';
 import noNotesImage from '../../public/empty.png';
 
@@ -28,7 +28,7 @@ const NoteList = ({ notes, onArchive, setNotes }) => {
     });
     setShowModal(true);
     setNotes(updatedDummyNotes.filter((note) => !note.isDummy));
-    setAllNotes(updatedDummyNotes); // Add this line
+    setAllNotes(updatedDummyNotes);
   };
   
   const handleArchive = (noteId) => {
@@ -39,14 +39,24 @@ const NoteList = ({ notes, onArchive, setNotes }) => {
         type: 'confirm',
         message: 'Anda yakin ingin mengarsipkan catatan ini?',
         onConfirm: () => {
-          const updatedNotes = noteToArchive.isDummy
-            ? archiveDummyNote(allNotes, noteId)
-            : allNotes.map((note) =>
-                note.id === noteId ? { ...note, archived: true, isDummy: false } : note
-              );
+          const updatedNotes = allNotes.map((note) =>
+            note.id === noteId
+              ? { ...note, archived: true, isDummy: note.isDummy ? true : false }
+              : note
+          );
   
-          setNotes(updatedNotes.filter((note) => !note.isDummy));
-          setAllNotes(updatedNotes);
+          if (!noteToArchive.isDummy) {
+            // Handle regular note deletion if it's not a dummy note
+            const updatedNotesWithoutDummy = deleteNote(updatedNotes, noteId);
+            setNotes(updatedNotesWithoutDummy.filter((note) => !note.isDummy));
+            setAllNotes(updatedNotesWithoutDummy);
+          } else {
+            // Handle dummy note deletion
+            const updatedDummyNotes = updatedNotes.filter((dNote) => dNote.id !== noteId);
+            setAllNotes(updatedDummyNotes);
+            console.log('Deleting dummy data:', noteToArchive);
+          }
+  
           setShowModal(false);
         },
         noteId: noteId,
@@ -58,9 +68,8 @@ const NoteList = ({ notes, onArchive, setNotes }) => {
   
   
   
+  
 
-  
-  
   const handleDelete = (noteId) => {
     const noteToDelete = allNotes.find((note) => note.id === noteId);
     if (noteToDelete) {
@@ -94,11 +103,14 @@ const NoteList = ({ notes, onArchive, setNotes }) => {
               </Link>
               <p>{showFormattedDate(note.createdAt)}</p>
               <div className="actions">
-                <button className="archive-button" onClick={() => handleArchive(note.id)}>
-                  <FontAwesomeIcon icon={faArchive} />
-                </button>
-                {(!note.isDummy || note.editIcon) && (
-                  <>
+              {(!note.isDummy || note.editIcon) && (
+                <>
+              <button
+                className="archive-button"
+                onClick={() => handleArchive(note.id)}
+              >
+                <FontAwesomeIcon icon={faArchive} />
+              </button>    
                     <button
                       className="delete-button"
                       onClick={() => {

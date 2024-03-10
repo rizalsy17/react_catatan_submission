@@ -25,24 +25,21 @@ const App = () => {
     setArchived(updatedArchived);
   };
 
+
   const onArchive = (noteId) => {
     setNotes((prevNotes) => {
-      // Update notes, marking the specified note as archived
       const updatedNotes = prevNotes.map((note) =>
         note.id === noteId ? { ...note, archived: true } : note
       );
   
-      // If setArchived is correctly defined, update the archived state
-      setArchived((prevArchived) => [
-        ...prevArchived,
-        ...updatedNotes.filter((note) => note.id === noteId && !note.isDummy),
-      ]);
-      
-      // Return updated notes
-      return updatedNotes;
+      const updatedArchived = prevNotes.filter((note) => note.id === noteId);
+  
+      setArchived((prevArchived) => [...prevArchived, ...updatedArchived]);
+  
+      return updatedNotes.filter((note) => !note.isDummy);
     });
   };
-
+  
   const onSaveEdit = (noteId, editedTitle, editedBody) => {
     setNotes((prevNotes) => {
       const updatedNotes = prevNotes.map((note) =>

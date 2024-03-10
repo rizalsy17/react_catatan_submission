@@ -15,15 +15,21 @@ const Archive = ({ archivedNotes, onActivate, onDeleteNote, onEdit }) => {
   };
 
   const archivedFilter = searchTerm
-    ? archivedNotes.filter(
-        (note) => !note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : archivedNotes;
+  ? archivedNotes.filter(
+      (note) => !note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : archivedNotes;
 
-    // const handleActivate = (noteId) => {
-    //   onActivate && onActivate(noteId);
-    // };
-    
+  const handleEditArchive = (note) => {
+    setModalContent({
+      type: 'edit',
+      noteId: note.id,
+      noteTitle: note.title,
+      noteBody: note.body,
+    });
+    setShowModal(true);
+  };
+
 
   return (
     <div className="container">
