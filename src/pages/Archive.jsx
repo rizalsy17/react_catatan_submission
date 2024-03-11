@@ -6,6 +6,7 @@ import Modal from '../components/Modal';
 import noNotesImage from '../../public/empty.png';
 
 const Archive = ({ archivedNotes, onActivate, onDeleteNote, onEdit }) => {
+  console.log('Archived Notes:', archivedNotes);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
